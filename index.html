@@ -5,38 +5,179 @@
   <title>스테비아 토마토 거래 분석 대시보드</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { font-family: 'Malgun Gothic', sans-serif; margin: 0; padding: 0; background: #f8f8f8; }
-    h2 { text-align: center; margin-top: 24px; font-size: 2em; }
-    ul { list-style: none; padding: 0; max-width: 500px; margin: 24px auto; }
-    li { margin: 16px 0; }
-    a {
-      display: block;
-      background: #1976d2;
-      color: #fff;
-      text-decoration: none;
-      padding: 22px 0;
-      border-radius: 8px;
-      font-size: 1.4em;
-      text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-      transition: background 0.2s;
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
     }
-    a:hover { background: #1565c0; }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    h1 {
+      color: #2c3e50;
+      font-size: 1.8em;
+      margin: 0 0 8px 0;
+    }
+    .subtitle {
+      color: #7f8c8d;
+      font-size: 0.95em;
+    }
+    .section {
+      margin-bottom: 24px;
+    }
+    .section-title {
+      font-size: 0.9em;
+      color: #95a5a6;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      padding-left: 4px;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      color: #2c3e50;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4em;
+      margin-right: 16px;
+      flex-shrink: 0;
+    }
+    .icon-blue { background: #e3f2fd; }
+    .icon-green { background: #e8f5e9; }
+    .icon-orange { background: #fff3e0; }
+    .icon-purple { background: #f3e5f5; }
+    .card-content h3 {
+      margin: 0 0 4px 0;
+      font-size: 1em;
+      font-weight: 600;
+    }
+    .card-content p {
+      margin: 0;
+      font-size: 0.85em;
+      color: #95a5a6;
+    }
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #95a5a6;
+      font-size: 0.85em;
+    }
     @media (max-width: 600px) {
-      h2 { font-size: 1.3em; }
-      a { font-size: 1.1em; padding: 18px 0; }
+      body { padding: 16px; }
+      h1 { font-size: 1.5em; }
+      .card { padding: 14px 16px; }
+      .card-icon { width: 40px; height: 40px; font-size: 1.2em; }
     }
   </style>
 </head>
 <body>
-  <h2>스테비아 토마토 거래 분석 대시보드</h2>
-  <ul>
-    <li><a href="monthly_trend_interactive_confirmed.html" target="_blank">월별 중도매인 주문건수 (확정상태+운송 포함)</a></li>
-    <li><a href="daily_trend_interactive_confirmed.html" target="_blank">일별 중도매인 주문건수 추이 (확정상태+운송 포함)</a></li>
-    <li><a href="merchant_monthly_heatmap_confirmed.html" target="_blank">중도매인별 월별 주문건수 히트맵 (확정상태+운송 포함)</a></li>
-    <li><a href="merchant_monthly_line_confirmed.html" target="_blank">중도매인별 월별 주문건수 변화 (확정상태+운송 포함)</a></li>
-    <li><a href="pivot_month_merchant.html" target="_blank">월별-중도매인별 주문건수 표</a></li>
-    <li><a href="may_merchant_bar_confirmed.html" target="_blank">2025년 5월 중도매인별 주문건수</a></li>
-  </ul>
+  <div class="container">
+    <header>
+      <h1>스테비아 토마토 거래 분석</h1>
+      <p class="subtitle">중도매인 주문 현황 대시보드</p>
+    </header>
+
+    <div class="section">
+      <div class="section-title">전체 추이</div>
+
+      <a href="monthly_trend_interactive_confirmed.html" class="card">
+        <div class="card-icon icon-blue">📊</div>
+        <div class="card-content">
+          <h3>월별 주문건수</h3>
+          <p>월별 주문 추이와 연도별 요약</p>
+        </div>
+      </a>
+
+      <a href="daily_trend_interactive_confirmed.html" class="card">
+        <div class="card-icon icon-green">📈</div>
+        <div class="card-content">
+          <h3>일별 주문건수 추이</h3>
+          <p>일자별 주문량 변화</p>
+        </div>
+      </a>
+    </div>
+
+    <div class="section">
+      <div class="section-title">중도매인 분석</div>
+
+      <a href="merchant_monthly_heatmap_confirmed.html" class="card">
+        <div class="card-icon icon-orange">🔥</div>
+        <div class="card-content">
+          <h3>중도매인별 월별 히트맵</h3>
+          <p>거래처별 월간 활동 밀도</p>
+        </div>
+      </a>
+
+      <a href="merchant_monthly_line_confirmed.html" class="card">
+        <div class="card-icon icon-purple">📉</div>
+        <div class="card-content">
+          <h3>중도매인별 월별 추이</h3>
+          <p>개별 거래처 주문 변화</p>
+        </div>
+      </a>
+
+      <a href="pivot_month_merchant.html" class="card">
+        <div class="card-icon icon-blue">📋</div>
+        <div class="card-content">
+          <h3>월별-중도매인별 표</h3>
+          <p>상세 데이터 테이블</p>
+        </div>
+      </a>
+    </div>
+
+    <div class="section">
+      <div class="section-title">✨ 특별 시각화</div>
+
+      <a href="3d_visualization.html" class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <div class="card-icon" style="background: rgba(255,255,255,0.2);">🎯</div>
+        <div class="card-content">
+          <h3 style="color: white;">3D 주문 현황</h3>
+          <p style="color: rgba(255,255,255,0.8);">마우스로 돌려보는 입체 차트</p>
+        </div>
+      </a>
+    </div>
+
+    <div class="section">
+      <div class="section-title">최근 월 분석</div>
+
+      <a href="may_merchant_bar_confirmed.html" class="card">
+        <div class="card-icon icon-green">📊</div>
+        <div class="card-content">
+          <h3>2025년 5월 중도매인별 주문</h3>
+          <p>최근 월 거래처별 현황</p>
+        </div>
+      </a>
+    </div>
+
+    <footer>
+      <p>확정상태 + 운송 데이터 기준</p>
+    </footer>
+  </div>
 </body>
 </html>
