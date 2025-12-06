@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>3D 주문 현황 - 스테비아 토마토</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Malgun Gothic', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      color: white;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    header {
+      text-align: center;
+      padding: 30px 0;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      color: #888;
+      font-size: 1em;
+    }
+    #chart {
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+    .tip {
+      text-align: center;
+      color: #888;
+      font-size: 0.9em;
+      padding: 20px;
+    }
+    .tip span {
+      background: rgba(255,255,255,0.1);
+      padding: 8px 16px;
+      border-radius: 20px;
+      margin: 0 5px;
+    }
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: all 0.2s;
+    }
+    .btn:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    .btn.active {
+      background: #4CAF50;
+      border-color: #4CAF50;
+    }
+    .back-link {
+      display: inline-block;
+      color: #888;
+      text-decoration: none;
+      margin-bottom: 20px;
+    }
+    .back-link:hover {
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html" class="back-link">← 대시보드로 돌아가기</a>
+
+    <header>
+      <h1>🎯 3D 주문 현황</h1>
+      <p class="subtitle">마우스로 드래그해서 돌려보세요!</p>
+    </header>
+
+    <div class="controls">
+      <button class="btn active" onclick="showSurface()">🌊 서피스</button>
+      <button class="btn" onclick="showBars()">📊 막대</button>
+      <button class="btn" onclick="showScatter()">🔮 점</button>
+    </div>
+
+    <div id="chart"></div>
+
+    <div class="tip">
+      <span>🖱️ 드래그: 회전</span>
+      <span>📍 호버: 상세정보</span>
+      <span>🔍 스크롤: 확대/축소</span>
+    </div>
+  </div>
+
+  <script>
+    // 데이터 정의
+    const months = ['2024-12', '2025-01', '2025-02', '2025-03', '2025-04', '2025-05'];
+    const merchants = [87, 180, 182, 186, 195, 199, 207, 354];
+
+    // 월별 × 거래처별 주문건수 (행: 월, 열: 거래처)
+    const data = [
+      [0, 6, 2, 6, 0, 0, 11, 0],    // 2024-12
+      [1, 10, 12, 13, 9, 0, 15, 0], // 2025-01
+      [3, 16, 12, 9, 5, 4, 17, 11], // 2025-02
+      [1, 10, 13, 7, 7, 23, 28, 3], // 2025-03
+      [2, 7, 10, 11, 8, 15, 22, 7], // 2025-04
+      [0, 18, 14, 13, 15, 18, 20, 3] // 2025-05
+    ];
+
+    // 공통 레이아웃
+    const layout = {
+      scene: {
+        xaxis: {
+          title: '월',
+          ticktext: months,
+          tickvals: [0, 1, 2, 3, 4, 5],
+          gridcolor: 'rgba(255,255,255,0.1)'
+        },
+        yaxis: {
+          title: '거래처 번호',
+          ticktext: merchants.map(String),
+          tickvals: [0, 1, 2, 3, 4, 5, 6, 7],
+          gridcolor: 'rgba(255,255,255,0.1)'
+        },
+        zaxis: {
+          title: '주문건수',
+          gridcolor: 'rgba(255,255,255,0.1)'
+        },
+        bgcolor: 'rgba(0,0,0,0)',
+        camera: {
+          eye: { x: 1.5, y: 1.5, z: 1.2 }
+        }
+      },
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      plot_bgcolor: 'rgba(0,0,0,0)',
+      font: { color: 'white', family: 'Malgun Gothic' },
+      margin: { l: 0, r: 0, t: 30, b: 0 },
+      showlegend: false
+    };
+
+    const config = {
+      responsive: true,
+      displayModeBar: true,
+      modeBarButtonsToRemove: ['toImage', 'sendDataToCloud']
+    };
+
+    // Surface 차트 (기본)
+    function showSurface() {
+      updateButtons(0);
+
+      const trace = {
+        type: 'surface',
+        z: data,
+        colorscale: [
+          [0, '#1a1a2e'],
+          [0.25, '#4a69bd'],
+          [0.5, '#6a89cc'],
+          [0.75, '#82ccdd'],
+          [1, '#b8e994']
+        ],
+        contours: {
+          z: {
+            show: true,
+            usecolormap: true,
+            highlightcolor: "#fff",
+            project: { z: true }
+          }
+        },
+        hovertemplate: '월: %{x}<br>거래처: %{y}<br>주문: %{z}건<extra></extra>'
+      };
+
+      Plotly.newPlot('chart', [trace], layout, config);
+    }
+
+    // 3D 막대 차트
+    function showBars() {
+      updateButtons(1);
+
+      const traces = [];
+      const colors = [
+        '#e74c3c', '#3498db', '#2ecc71', '#f39c12',
+        '#9b59b6', '#1abc9c', '#e67e22', '#34495e'
+      ];
+
+      for (let i = 0; i < months.length; i++) {
+        for (let j = 0; j < merchants.length; j++) {
+          if (data[i][j] > 0) {
+            traces.push({
+              type: 'scatter3d',
+              mode: 'markers',
+              x: [i],
+              y: [j],
+              z: [data[i][j]],
+              marker: {
+                size: Math.max(8, data[i][j] * 1.5),
+                color: colors[j],
+                opacity: 0.8,
+                symbol: 'square'
+              },
+              name: `거래처 ${merchants[j]}`,
+              hovertemplate: `${months[i]}<br>거래처 ${merchants[j]}<br>주문: ${data[i][j]}건<extra></extra>`
+            });
+          }
+        }
+      }
+
+      Plotly.newPlot('chart', traces, layout, config);
+    }
+
+    // 3D 점 차트 (버블)
+    function showScatter() {
+      updateButtons(2);
+
+      const x = [], y = [], z = [], sizes = [], colors = [], texts = [];
+
+      for (let i = 0; i < months.length; i++) {
+        for (let j = 0; j < merchants.length; j++) {
+          if (data[i][j] > 0) {
+            x.push(i);
+            y.push(j);
+            z.push(data[i][j]);
+            sizes.push(Math.max(10, data[i][j] * 2));
+            colors.push(data[i][j]);
+            texts.push(`${months[i]}<br>거래처 ${merchants[j]}<br>주문: ${data[i][j]}건`);
+          }
+        }
+      }
+
+      const trace = {
+        type: 'scatter3d',
+        mode: 'markers',
+        x: x,
+        y: y,
+        z: z,
+        marker: {
+          size: sizes,
+          color: colors,
+          colorscale: 'Viridis',
+          opacity: 0.8,
+          line: {
+            color: 'white',
+            width: 1
+          }
+        },
+        text: texts,
+        hovertemplate: '%{text}<extra></extra>'
+      };
+
+      Plotly.newPlot('chart', [trace], layout, config);
+    }
+
+    // 버튼 상태 업데이트
+    function updateButtons(activeIndex) {
+      document.querySelectorAll('.btn').forEach((btn, i) => {
+        btn.classList.toggle('active', i === activeIndex);
+      });
+    }
+
+    // 초기 로드
+    showSurface();
+  </script>
+</body>
+</html>
